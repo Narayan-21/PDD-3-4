@@ -1,5 +1,5 @@
 from json import load, loads, JSONDecodeError
-from jsonschema import validate
+from jsonschema import validate, Draft4Validator
 from jsonschema.exceptions import ValidationError
 
 person_schema = {
@@ -52,13 +52,20 @@ p3 = '''
     "age": -10.4
 }'''
 
-person = p1
+validator = Draft4Validator(person_schema)
 
+person1 = p1
+person2 = p2
 try:
-    validate(loads(person), person_schema)
+    validate(loads(person1), person_schema)
 except JSONDecodeError as ex:
     print(f'Invalid JSON: {ex}')
 except ValidationError as ex:
     print(f'Validation error: {ex}')
 else:
     print('JSON is Valid and confirms to schema')
+
+
+for error in validator.iter_errors(loads(person2)):
+    print('\n-------\nError Using Draft4Validator in Person2....')
+    print(error, end= '\n--------\n')
